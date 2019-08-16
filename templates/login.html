@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <link rel="stylesheet" href="/static/bootstrap-3.3.7-dist/css/bootstrap.css">
+    <link rel="stylesheet" href="/static/AdminLTE-master/bootstrap/dist/css/bootstrap.min.css">
 </head>
 <body>
 <h3>登陆页面</h3>
 <div class="container">
     <div class="row">
         <div class="col-md-3 col-md-offset-4">
-            <form action="" method="post">
+            <form action="" method="post" novalidate>
                 {% csrf_token %}
                 <div class="form-group">
                     <label for="">用户名</label>
@@ -38,7 +38,7 @@
     </div>
 </div>
 
-<script src="/static/js/jQuery-v3.4.1.js"></script>
+<script src="/static/AdminLTE-master/jquery/dist/jquery.js"></script>
 <script>
     $(".login_btn").click(function () {
 
@@ -57,7 +57,7 @@
 
                 if (response.user) {
                     // 登录成功
-                    location.href = "http://www.luffycity.com"
+                    location.href = "/"
                 } else {
                     // 登录失败
                     $(".error").html(response.err_msg).css("color", "red")

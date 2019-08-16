@@ -1,6 +1,6 @@
 class Pagination(object):
 
-    def __init__(self, current_page_num, all_count, request, per_page_num=2, pager_count=11):
+    def __init__(self, current_page_num, all_count, request, per_page_num=5, pager_count=11):
         """
         封装分页相关数据
         :param current_page_num: 当前访问页的数字
