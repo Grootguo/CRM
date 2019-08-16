@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+
+
+
+{% block content %}
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <h1>
+                {{ label }}
+                <small>Optional description</small>
+            </h1>
+            <!-- 模糊查询的 from 表单 -->
+            <form action="" method="get" >
+                 <ol class="breadcrumb">
+                    <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+                    <li class="active">Here</li>
+                     <select name="field" id="s1" class="form-control" style="display: inline-block;width: 100px" >
+                         <option value="name">姓名</option>
+                         <option value="qq">qq</option>
+                         <option value="phone">手机</option>
+                     </select>
+                     <input type="text" name="q" style="display: inline-block;width: 200px">
+                     <button style="vertical-align: 0px" class="btn btn-success">search</button>
+                </ol>
+            </form>
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="box">
+                        <form action="" method="post" >
+                            <div class="box-header">
+                                <h3 class="box-title"> <a href="/customer/add/{{ next }}" class="btn btn-primary">添加客户</a></h3>
+
+                                <!-- 批量处理的 form 表单-->
+                                {% csrf_token %}
+                                <ol class="breadcrumb" style="width: 400px; display: inline-block">
+                                     <select name="action" id="s1" class="form-control" style="display: inline-block;width: 240px" >
+                                         <option value="0">---请选择----</option>
+                                         <option value="patch_delete">批量删除</option>
+                                         <option value="patch_reverse_gs">公户转私户</option>
+                                         <option value="patch_reverse_sg">私户转公户</option>
+                                     </select>
+                                     <button style="vertical-align: 0px" class="btn btn-default">go</button>
+                                </ol>
+                            </div>
+
+                            <!-- /.box-header -->
+                            <div class="box-body">
+                                <table  id="example2" class="text-center table table-bordered table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th><input type="checkbox" name="" id=""> </th>
+                                            <th>编号</th>
+                                            <th>客户姓名</th>
+                                            <th>性别</th>
+                                            <th>QQ</th>
+                                            <th>手机号</th>
+                                            <th>客户来源</th>
+                                            <th>咨询日期</th>
+                                            <th>当前状态</th>
+                                            <th>销售</th>
+                                            <th>所报班级</th>
+                                            <th>跟进记录</th>
+                                            <th>编辑</th>
+                                            <th>删除</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                     {% for customer in customer_list %}
+                                         <tr>
+                                             <td><input type="checkbox" name="select_pk_list" value="{{ customer.pk }}"></td>
+                                             <td>{{ forloop.counter }}</td>
+                                             <td>{{ customer.name }}</td>
+                                             <td>{{ customer.get_sex_display }}</td>
+                                             <td>{{ customer.qq }}</td>
+                                             <td>{{ customer.phone|default:"暂无" }}</td>
+                                             <td>{{ customer.get_source_display }}</td>
+                                             <td>{{ customer.date|date:'Y-m-d' }}</td>
+                                             <td>{{ customer.get_status }}</td>
+                                             <td>{{ customer.consultant|default:"暂无" }}</td>
+                                             <td>{{ customer.get_classlist|default:"暂无" }}</td>
+                                             <td><a href="/consult_records/?customer_id={{ customer.pk }}">跟进详情</a></td>
+                                             <td>
+                                                 <a href="{% url 'editcustomer' customer.pk %}{{ next }}" ><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
+                                             </td>
+                                             <td>
+                                                 <a href="" ><i class="fa fa-trash" aria-hidden="true"></i></a>
+                                             </td>
+                                         </tr>
+                                     {% endfor %}
+
+
+                                    </tbody>
+                                </table>
+                                <nav aria-label="Page navigation" class="pull-right">
+                                      <ul class="pagination">
+                                         {{ pagination.page_html|safe }}
+                                      </ul>
+                                </nav>
+                            </div>
+                            <!-- /.box-body -->
+                        </form>
+                    </div>
+                </div>
+                <!-- /.col -->
+            </div>
+            <!-- /.row -->
+        </section>
+        <!-- /.content -->
+    </div>
+{% endblock %}
+
+
+{% block js %}
+ <script>
+                   $("#s1").change(function () {
+                       if($(this).val()==="status"){
+                             let s1=`
+                             <select name="q" id="s2" class="form-control" style="display: inline-block;width: 100px">
+                                 <option value="signed">已报名</option>
+                                 <option value="unregistered">未报名</option>
+                                 <option value="studying">学习中</option>
+                                 <option value="paid_in_full">学费已交齐</option>
+                             </select>
+                             `;
+
+                           $(this).next().replaceWith(s1)
+                       }
+                   })
+            </script>
+{% endblock %}
