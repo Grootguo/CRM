@@ -2,10 +2,7 @@
 from django.contrib.auth.models import AbstractUser
 
 from django.db import models
-from django.contrib import auth
-from django.core.exceptions import PermissionDenied
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager, User
-from django.utils.translation import ugettext_lazy as _
 from multiselectfield import MultiSelectField
 from django.utils.safestring import mark_safe
 
@@ -45,9 +42,10 @@ attendance_choices = (('checked', "已签到"),
                       ('absence', "缺勤"),
                       ('leave_early', "早退"),)
 
+from rbac.models import User
 
 
-class UserInfo(AbstractUser):
+class UserInfo(User):
     """
     员工表
     """

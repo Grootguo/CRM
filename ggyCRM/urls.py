@@ -14,21 +14,30 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, re_path
+from django.urls import path, re_path, include
+from django.conf.urls import url
+
+from stark.service.stark import site
 from app1 import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.index),
+    url('stark/', site.urls),
+    # url('login/', views.login),
+    # url('logout/', views.logout),
+    # url('^home/$', views.home),
+    # path('crm/room_book/', views.RoomBookView.as_view()),
+
     path('login/', views.login),
     path('logout/', views.logout),
     path('get_valid_img/', views.get_valid_img),
     path('reg/', views.reg),
-    path('customers/list/', views.CustomersView.as_view(), name="customers_list"),
-    path('mycustomers/', views.CustomersView.as_view(), name="mycustomers"),
-    path('customer/add/', views.AddEditCustomerView.as_view()),
-    re_path('customer/edit/(\d+)', views.AddEditCustomerView.as_view(), name="editcustomer"),
-    path('consult_records/', views.ConsultRecordsView.as_view()),
-    path('consult_records/add/', views.AddEditConsultRecordView.as_view(), name="add_consult_records"),
-    re_path('consult_records/edit/(\d+)', views.AddEditConsultRecordView.as_view(), name="edit_consult_records"),
+    #     path('customers/list/', views.CustomersView.as_view(), name="customers_list"),
+    #     path('mycustomers/', views.CustomersView.as_view(), name="mycustomers"),
+    #     path('customer/add/', views.AddEditCustomerView.as_view()),
+    #     re_path('customer/edit/(\d+)', views.AddEditCustomerView.as_view(), name="editcustomer"),
+    #     path('consult_records/', views.ConsultRecordsView.as_view()),
+    #     path('consult_records/add/', views.AddEditConsultRecordView.as_view(), name="add_consult_records"),
+    #     re_path('consult_records/edit/(\d+)', views.AddEditConsultRecordView.as_view(), name="edit_consult_records"),
 ]

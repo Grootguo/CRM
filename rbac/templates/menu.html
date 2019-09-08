@@ -1,0 +1,89 @@
+{% block css %}
+    <style>
+
+   .list-group-item {
+        position: relative;
+        display: block;
+        padding: 10px 15px;
+        margin-bottom: -1px;
+        background-color: #fff;
+        border: 1px solid #ddd;
+    }
+    .node-treeview {
+        color: #428bca;
+    }
+    .indent{
+            margin-left: 8px;
+            margin-right: 10px;
+    }
+
+    </style>
+{% endblock %}
+
+
+
+<div id="treeview" class="treeview">
+    <ul class="list-group tree small">
+          <li class="list-group-item node-treeview">
+                <span class="icon node-icon glyphicon glyphicon-bookmark"></span>
+              <a href="/home/"><span>首页</span></a>
+          </li>
+    </ul>
+</div>
+
+
+
+{% block js %}
+   <script src="/static/js/jquery.js"></script>
+   <script>
+       var permission_list ={{ permission_list|safe }};
+            console.log(permission_list);
+            console.log(typeof permission_list);
+
+            $.each(permission_list, function (i,permission_obj) {
+
+                let title = permission_obj.title;
+                let type = permission_obj.type;
+                let url = permission_obj.url?permission_obj.url:"javascript:void(0)" ;
+                let pid = permission_obj.pid;
+                let per_level = permission_obj.per_level;
+                let id = permission_obj.id;
+                let icon=permission_obj.url?'':'icon expand-icon glyphicon glyphicon-chevron-down'
+
+                if (type == "menu") {
+
+                    if (!pid) {
+                        let s = `
+                       <li class="list-group-item node-treeview f_menu" id=${id} pid=${pid}>
+                            <span class="icon expand-icon glyphicon glyphicon-chevron-down"></span>
+                            <span class="icon node-icon glyphicon glyphicon-bookmark"></span>
+                            <span>${title}</span>
+                        </li>
+                       `;
+
+                        $(".tree").append(s);
+
+                    } else {
+                        let str = "";
+                        for (var i = 0;i<per_level-1;i++){
+                            str=str.concat('<span class="indent"></span>');
+                        }
+
+                        let s = `
+                       <li class="list-group-item node-treeview" id=${id} pid=${pid}>
+                            ${str}
+                            <span class="${icon}"></span>
+                            <span class="icon node-icon glyphicon glyphicon-bookmark"></span>
+                            <a href='${url}'>${title}</a>
+                        </li>
+                       `;
+                        $("#"+pid).after(s)
+
+                    }
+                }
+            });
+
+
+   </script>
+
+{% endblock js %}

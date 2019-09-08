@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'app1.apps.App1Config',
+    'rbac.apps.RbacConfig',
+    'stark.apps.StarkConfig',
 ]
 
 MIDDLEWARE = [

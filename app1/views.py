@@ -141,6 +141,7 @@ class CustomersView(View):
     """
 
     """
+
     def get(self, request):
         """
 
@@ -310,6 +311,7 @@ class AddEditConsultRecordView(View):
     """
 
     """
+
     def get(self, request, edit_id=None):
         """
 
@@ -335,4 +337,3 @@ class AddEditConsultRecordView(View):
             return redirect(request.GET.get("next"))
         else:
             return render(request, 'customer/add_edit_consultrecord.html', {'form': form})
-

@@ -1,0 +1,245 @@
+{% extends "stark/base.html" %}
+
+
+{% block css %}
+    <style>
+
+
+
+        .user-area .active a{
+            color: white;
+        }
+
+
+        .role-area tr td a {
+            display: block;
+        }
+
+        .role-area tr.active {
+            background-color: #f1f7fd;
+            border-left: 3px solid #fdc00f;
+        }
+
+        .permission-area tr.root {
+            background-color: #f1f7fd!important;
+            cursor: pointer;
+        }
+
+        .permission-area tr.root td i {
+            margin: 3px;
+        }
+
+
+        .permission-area .node input[type='checkbox'] {
+            margin: 0 5px;
+        }
+
+        .permission-area .node .parent {
+            padding: 5px 0;
+        }
+
+        .permission-area .node label {
+            font-weight: normal;
+            margin-bottom: 0;
+            font-size: 12px;
+        }
+
+        .permission-area .node .children {
+            padding: 0 0 0 20px;
+        }
+
+        .permission-area .node .children .child {
+            display: inline-block;
+            margin: 2px 5px;
+        }
+
+        table {
+            font-size: 12px;
+        }
+
+        .panel-body {
+            font-size: 12px;
+        }
+          table tr td{
+              padding: 12px !important;
+          }
+
+
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="luffy-container">
+        <div class="col-md-3 user-area">
+            <div class="panel panel-success">
+                <!-- Default panel contents -->
+                <div class="panel-heading">
+                    <i class="fa fa-address-book-o" aria-hidden="true"></i> 用户列表
+                </div>
+
+                <div class="panel-body">
+
+
+                    <ul class="list-group">
+                        {% for user in user_list %}
+                            {% if user.id|safe == uid %}
+                                <li class="list-group-item active"><a href="?uid={{ user.id }}">{{ user.name }}</a></li>
+                            {% else %}
+                                 <li class="list-group-item"><a href="?uid={{ user.id }}">{{ user.name }}</a></li>
+                            {% endif %}
+
+                        {% endfor %}
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="col-md-3 role-area">
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="postType" value="role">
+                <div class="panel panel-danger">
+                    <!-- Default panel contents -->
+                    <div class="panel-heading">
+                        <i class="fa fa-book" aria-hidden="true"></i> 角色列表
+                        {% if uid %}
+                            <button type="submit" class="right btn btn-success btn-xs"
+                                    style="padding: 2px 8px;margin: -3px;">
+                                <i class="fa fa-save" aria-hidden="true"></i>
+                                保存
+                            </button>
+                        {% endif %}
+                    </div>
+                    <div class="panel-body" style="color: #d4d4d4;padding:10px  5px;">
+                        提示：点击用户后才能为其分配角色
+                    </div>
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>角色</th>
+                            <th>选择</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for role in role_list %}
+                            <tr {% if role.id|safe == rid %} class="active"  {% endif %}>
+                                {% load customer_filter_tag %}
+                                <td><a href="?rid={{ role.id }}">{{ role.name }}</a></td>
+                                <td>
+                                    {% if role.id in role_id_list %}
+                                        <input type="checkbox" name="roles" value="{{ role.id }}" checked/>
+                                    {% else %}
+                                        <input  type="checkbox" name="roles" value="{{ role.id }}"/>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+
+                        </tbody>
+                    </table>
+
+                </div>
+            </form>
+        </div>
+
+        <div class="col-md-6 permission-area">
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="postType" value="permission">
+                <div class="panel panel-info">
+                    <!-- Default panel contents -->
+                    <div class="panel-heading">
+                        <i class="fa fa-sitemap" aria-hidden="true"></i> 权限分配
+                        {% if rid %}
+                            <button class="right btn btn-success btn-xs" style="padding: 2px 8px;margin: -3px;">
+                                <i class="fa fa-save" aria-hidden="true"></i>
+                                保存
+                            </button>
+                        {% endif %}
+                    </div>
+                    <div class="panel-body" style="color: #d4d4d4;padding: 10px 5px;">
+                        提示：点击角色后，才能为其分配权限。
+                    </div>
+                    <table class="table" id="body">
+                        <tbody>
+
+                        </tbody>
+                    </table>
+                </div>
+            </form>
+        </div>
+
+    </div>
+{% endblock %}
+{% block js %}
+    <script>
+        $(function () {
+            bindRootPermissionClick();
+        });
+
+        function bindRootPermissionClick() {
+            $('.permission-area').on('click', '.root', function () {
+                var caret = $(this).find('i');
+                if (caret.hasClass('fa-caret-right')) {
+                    caret.removeClass('fa-caret-right').addClass('fa-caret-down');
+                    $(this).next().removeClass('hide');
+                } else {
+                    caret.removeClass('fa-caret-down').addClass('fa-caret-right');
+                    $(this).next().addClass('hide');
+
+                }
+            })
+        }
+
+
+
+        $.ajax({
+            url:"/stark/rbac/permission/per_data/",
+            type:"get",
+            success:function(res){
+                console.log(res);
+                $.each(res,function(i,permission){
+
+                    console.log(i,permission);
+
+                    var pid=permission["pid"];
+                    var url=permission["url"];
+                    var pk=permission["pk"];
+                    var title=permission["title"];
+                    var type=permission["type"];
+
+                    if(pid){
+                        if(type=="menu"){
+                             var s=`<tr id='id_${pk}'><td><input name="permissions_id" value='${pk}' type="checkbox">&nbsp;${title}</td></tr>`;
+                             $("#id_"+pid).after(s)
+                        }else{
+                             var s=`<td><input name="permissions_id" value='${pk}' type="checkbox">&nbsp;${title}</td>`;
+                             $("#id_"+pid).append(s)
+                        }
+
+                    }else {
+                        var s=`<tr class='root' id='id_${pk}'><td>${title}</td></tr>`;
+                        $("#body").append(s);
+                    }
+
+
+
+                    // 权限勾中
+                     var per_id_list={{ per_id_list }}
+                    $.each(per_id_list,function(i,j){
+                        console.log($("[value='"+j+"']")[0]);
+                        $("#body [value='"+j+"']").prop("checked",true);
+                    })
+
+
+
+
+
+                });
+            }
+        });
+
+
+    </script>
+{% endblock %}
